@@ -1,4 +1,5 @@
-﻿using Bulky.Models.Models;
+﻿using Bulky.Models;
+using Bulky.Models.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -13,15 +14,53 @@ namespace Bulky.DataAcess.Data
         }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<Company> Companies { get; set; }
+        public DbSet<ShoppingCart> ShoppingCarts { get; set; }
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        public DbSet<OrderHeader> OrderHeaders { get; set; }
+        public DbSet<OrderDetail> OrderDetails { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder); // add for identity db context
+
             modelBuilder.Entity<Category>().HasData(
                 new Category { CategoryId = 1, Name = "Action", DisplayOrder = 1 },
                 new Category { CategoryId = 2, Name = "Sci-Fi", DisplayOrder = 2 },
                 new Category { CategoryId = 3, Name = "History", DisplayOrder = 3 }
                 );
+
+            modelBuilder.Entity<Company>().HasData(
+              new Company { 
+                  CompanyId = 1, 
+                  Name = "Tech Solutions", 
+                  StreetAddress = "89 Tech Street", 
+                  City = "Leeds", PhoneNumber = "12343432342", 
+                  PostalCode = "LS23 456", 
+                  State = "England"  
+              },
+               new Company
+               {
+                   CompanyId = 2,
+                   Name = "Vivid Books",
+                   StreetAddress = "62 Silicon Street",
+                   City = "Swansea",
+                   PhoneNumber = "12753432342",
+                   PostalCode = "SA13 056",
+                   State = "Wales"
+               },
+               new Company
+               {
+                    CompanyId = 3,
+                    Name = "Kings Publisher",
+                    StreetAddress = "13 Valley Street",
+                    City = "Bath",
+                    PhoneNumber = "165343432342",
+                    PostalCode = "BT23 406",
+                    State = "England"
+                }
+              );
+
             modelBuilder.Entity<Product>().HasData(
                new Product
                {

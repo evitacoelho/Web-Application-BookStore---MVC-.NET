@@ -3,7 +3,9 @@ using Bulky.DataAcess.Data;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -25,26 +27,42 @@ namespace Bulky.DataAccess.Repository
             dbSet.Add(entity);
         }
 
-        public T Get(System.Linq.Expressions.Expression<Func<T, bool>> filter, string? includeProperties = null)
+       
+        public T Get(Expression<Func<T, bool>> filter, string? includeProperties = null, bool tracked = false)
         {
-            IQueryable<T> query = dbSet.Where(filter);
-            //if any include prop are passed, retrieve them along with the object
-            if (!string.IsNullOrEmpty(includeProperties))
+            IQueryable<T> query;
+            if (tracked)
             {
-                foreach (var includeProp in includeProperties
-                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-                {
-                    query = query.Include(includeProp);
-                }
+                 query = dbSet.Where(filter);
 
             }
-            return query.FirstOrDefault();
+            else
+            {
+                 query = dbSet.Where(filter).AsNoTracking();
+            }
+                //if any include prop are passed, retrieve them along with the object
+                if (!string.IsNullOrEmpty(includeProperties))
+                {
+                    foreach (var includeProp in includeProperties
+                        .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        query = query.Include(includeProp);
+                    }
+
+                }
+                return query.FirstOrDefault();           
         }
 
-        public IEnumerable<T> GetAll(string? includeProperties = null)
+        public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter,string? includeProperties = null)
         {
             IQueryable<T> query = dbSet;
-
+            //filter is optional and will be applied only when it is passed as a non null object
+            //retreive the entire dbset when filter is null
+            if(filter != null)
+            {
+                query = query.Where(filter);
+            }
+            
             //if any include prop are passed, retrieve them along with the object
             if(!string.IsNullOrEmpty(includeProperties))
             {
